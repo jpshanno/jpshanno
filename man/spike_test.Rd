@@ -2,14 +2,31 @@
 % Please edit documentation in R/processing_functions.R
 \name{spike_test}
 \alias{spike_test}
-\title{Title}
+\title{Perform a spike test on a set of observations}
 \usage{
 spike_test(data, observations, n = 4, window = NULL, max.passes = 3,
   backfill = TRUE, ...)
 }
 \arguments{
-\item{...}{}
+\item{observations}{The unquoted column name of the data you want to test}
+
+\item{n}{The size of the window to use when calculating the mean and standard
+deviation of the step size, defaults to 4}
+
+\item{window}{If data is a tsibble window can be specified rather than n,
+using natural language as in \code{\link[lubridate]{duration}} (e.g. '3
+hours')}
+
+\item{max.passes}{The number of times the spike test will be run over the
+code to catch smaller spikes that may have been masked by large spikes.
+Defaults to 3}
+
+\item{backfill}{A logical indicating if \code{\link[zoo]{na_approx}} should
+be used}
+
+\item{...}{Arguments passed on to \code{\link[zoo]{na_approx}}}
 }
 \description{
-Title
+Compare the step size between data points to the average step size within a
+specified window and remove and flag spiked data.
 }

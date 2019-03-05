@@ -1,4 +1,4 @@
-#' Title
+#' Detach and reload this package
 #'
 #' @return
 #' @export
@@ -6,77 +6,72 @@
 #' @examples
 reload_jpshanno <-
   function(){
-    detach(package:jpshanno, unload = TRUE)
+    detach(package:jpshanno)
     library(jpshanno)
   }
 
-#' Title
+#' Copy the supplied .Rprofile to your home directory
 #'
-#' @param x
-#'
-#' @return
-#' @export
-#'
-#' @examples
-split_cfi_id <-
-  function(x){
-    split_x <-
-      regmatches(x, regexec("([a-z]{3})([0-9]{3})([0-9]{3})([0-9]{3})([0-9]{4})([0-9]{6})", x))[[1]][-1]
-
-    purrr::map_chr(split_x, str_remove, "^0+") %>%
-      purrr::set_names(c("source", "state_code", "unit_code",
-                         "county_code", "invyr", "plot"))
-  }
-
-#' Title
-#'
-#' @param data
-#' @param x
+#' @param overwrite Logical indicating if an exisits .Rprofile should be
+#'   overwritten
+#' @param view.only Logical indicating if .Rprofile should be printed in the
+#'   console instead of copied
 #'
 #' @return
 #' @export
 #'
 #' @examples
-extract_cfi_id <-
-  function(data, x){
-    x <-
-      rlang::enquo(x)
+set_rprofile <-
+  function(overwrite = TRUE,
+           view.only = FALSE){
 
-    data %>%
-      tidyr::extract(!!x,
-                     into = c("source", "state_code", "unit_code",
-                              "county_code", "invyr", "plot"),
-                     regex = "([a-z]{3})([0-9]{3})([0-9]{3})([0-9]{3})([0-9]{4})([0-9]{6})",
-                     convert = TRUE)
+    r_profile <-
+      system.file(".Rprofile",
+                  package = "jpshanno")
 
-  }
-
-write_gdb <-
-  function(obj, gdb, layer.name = NULL){
-
-    if(is.null(layer.name)){
-      layer.name <-
-        deparse(substitute(obj))
+    if(view.only){
+      cat(readLines(r_profile), sep = "\n")
     }
 
-    gdb <-
-      normalizePath(gdb)
+    new_path <-
+      file.path(Sys.getenv("HOME"), ".Rprofile")
 
-    temp_file <-
-      tempfile(fileext = ".gpkg")
+    if(file.exists(new_path) & !overwrite){
+      stop(new_path, " already exists.")
+    }
 
-    sf::write_sf(obj,
-                 temp_file)
+    copy_cmd <-
+      ifelse(Sys.info()[["sysname"]] == "Windows",
+             glue::glue("COPY /Y {r_profile} {new_path"),
+             glue::glue("cp {r_profile} {new_path} 2> /dev/null"))
 
-    ogr <-
-      dplyr::if_else(Sys.info()[["sysname"]] == "Windows",
-                     "C:/OSGeo4W64/bin/ogr2ogr",
-                     "ogr2ogr")
+    copy_result <-
+      system(copy_cmd)
 
-    system_call <-
-      glue::glue('{ogr} -f "FileGDB" -update "{gdb}" "{temp_file}" -nln "{layer.name}"')
+    if(copy_result != "0"){
+      stop("Copying .Rprofile failed with exit status ", copy_result, "\n  ",
+           copy_cmd,
+           "\n  And exit status ",
+           copy_result,
+           call. = FALSE)
+    } else {
+      source(new_path,
+             echo = FALSE)
+    }
+  }
 
-    system(system_call)
+#' Print all the rows of a tibble
+#'
+#' @param data
+#'
+#' @return
+#' @export
+#'
+#' @examples
+print_all <-
+  function(data){
+    print(data,
+          n = nrow(data))
 
-    unlink(temp_file)
+    invisible(data)
   }

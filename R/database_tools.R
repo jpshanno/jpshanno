@@ -1,9 +1,9 @@
 # These are somewhat inefficient because they collect the data for each function
 # call, but for my purposes that's okay. It allows me to keep remote data as
-# remote and local data as local. Alternative you could copy the local data each
-# time as that is likely to the the smaller dataset.
+# remote and local data as local. Alternatively you could copy the local data
+# each time as that is likely to the the smaller dataset.
 
-#' Title
+#' Check local categorical data against remote categorical data
 #'
 #' @param local
 #' @param remote
@@ -34,13 +34,13 @@ check_categorical <-
       dplyr::distinct()
   }
 
-#' Title
+#' Check local numeric data against remote numeric data
 #'
 #' @param local
 #' @param remote
 #' @param column
 #'
-#' @return
+#' @return A sina or violin plot comparing the local and remote data
 #' @export
 #'
 #' @examples
@@ -64,21 +64,33 @@ check_numeric <-
                        remote = remote,
                        .id = "source")
 
-    ggplot2::ggplot(data = combined,
-                    ggplot2::aes(y = !!column,
-                                 x = source)) +
-      ggplot2::geom_violin()
+    base_plot <-
+      ggplot2::ggplot(data = combined,
+                      ggplot2::aes(y = !!column,
+                                   x = source))
+    if(is.null(path.package("ggforce"))){
+      base_plot + ggplot2::geom_violin()
+    } else {
+      base_plot + ggforce::geom_sina()
+    }
   }
 
 
-#' Title
+#' Insert local data into an existing remote table
 #'
-#' @param local
-#' @param remote
-#' @param verbose
-#' @param ignore.structure
+#' By default this function will check that the local and remote tables have
+#' matching data structures, and CRSs (if local is of class sf). Only new rows
+#' are inserted into the remote source.
 #'
-#' @return
+#' @param local A local dataframe, tibble or tbl_sf
+#' @param remote A tbl_dbi connection
+#' @param verbose A logical indicating if the number of inserted rows will be
+#'   printed as a message
+#' @param ignore.structure A logical inidicating if data should be inserted even
+#'   if the structures do not match USE WITH CAUTION
+#'
+#' @return The updated remote source is returned invisibly to allow continued
+#'   piping
 #' @export
 #'
 #' @examples
@@ -215,4 +227,6 @@ insert_data <-
                      insert_sql)
 
     if(verbose){ message(n_inserted, " rows added to ", tbl_name) }
+
+    invisible(remote)
   }

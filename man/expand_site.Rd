@@ -2,7 +2,7 @@
 % Please edit documentation in R/processing_functions.R
 \name{expand_site}
 \alias{expand_site}
-\title{Title}
+\title{Expand black ash site name to three digits by left padding}
 \usage{
 expand_site(x)
 }
@@ -10,5 +10,5 @@ expand_site(x)
 \item{x}{}
 }
 \description{
-Title
+Expand black ash site name to three digits by left padding
 }

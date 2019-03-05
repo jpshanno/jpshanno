@@ -2,14 +2,39 @@
 % Please edit documentation in R/processing_functions.R
 \name{interval_join}
 \alias{interval_join}
-\title{Title}
+\alias{interval_left_join}
+\alias{interval_anti_join}
+\alias{interval_inner_join}
+\alias{interval_semi_join}
+\title{Join a tibble containing intervals to one containing time stamps}
 \usage{
 interval_join(x, y, instant, interval, by = NULL, join,
   step = "15 minutes")
+
+interval_left_join(...)
+
+interval_anti_join(...)
+
+interval_inner_join(...)
+
+interval_semi_join(...)
 }
 \arguments{
-\item{step}{}
+\item{x}{The table containing instanteous data}
+
+\item{y}{The table containing interval data}
+
+\item{instant}{The unquoted column name of the timestamps in x}
+
+\item{interval}{The unquoted column name of the intervals in y}
+
+\item{by}{Other columns to join by}
+
+\item{join}{Type of join, one of 'left', 'inner', 'anti', or 'semi'}
+
+\item{step}{The time step to use when expanding the intervals (should match
+the time step of the instantous data). Passed to \code{\link{expand_intervals}}}
 }
 \description{
-Title
+Join a tibble containing intervals to one containing time stamps
 }

@@ -2,10 +2,10 @@
 % Please edit documentation in R/convenience_functions.R
 \name{reload_jpshanno}
 \alias{reload_jpshanno}
-\title{Title}
+\title{Detach and reload this package}
 \usage{
 reload_jpshanno()
 }
 \description{
-Title
+Detach and reload this package
 }

@@ -2,13 +2,16 @@
 % Please edit documentation in R/database_tools.R
 \name{check_numeric}
 \alias{check_numeric}
-\title{Title}
+\title{Check local numeric data against remote numeric data}
 \usage{
 check_numeric(local, remote, column)
 }
 \arguments{
 \item{column}{}
 }
+\value{
+A sina or violin plot comparing the local and remote data
+}
 \description{
-Title
+Check local numeric data against remote numeric data
 }

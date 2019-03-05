@@ -2,7 +2,7 @@
 % Please edit documentation in R/database_tools.R
 \name{check_categorical}
 \alias{check_categorical}
-\title{Title}
+\title{Check local categorical data against remote categorical data}
 \usage{
 check_categorical(local, remote, column)
 }
@@ -10,5 +10,5 @@ check_categorical(local, remote, column)
 \item{column}{}
 }
 \description{
-Title
+Check local categorical data against remote categorical data
 }

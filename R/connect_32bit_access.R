@@ -1,8 +1,6 @@
 # Adapted from the ideas in these answers:
 # https://stackoverflow.com/questions/13070706/how-to-connect-r-with-access-database-in-64-bit-window
 
-#' r32_fetch_table
-#'
 #' Fetch a table from an Access database from 64-bit R.
 #'
 #' @param db.path
@@ -67,8 +65,6 @@ r32_fetch_table <- function(db.path,
 }
 
 
-#' r32_list_tables
-#'
 #' List tables in a 32-bit Access database from 64-bit R
 #'
 #' @param db.path
@@ -116,8 +112,6 @@ r32_list_tables <- function(db.path) {
 }
 
 
-#' r32_query
-#'
 #' Send a query to and fetch results from a 32-bit Access database from 64-bit R
 #'
 #' @param db.path
@@ -178,6 +172,15 @@ r32_query <- function(db.path,
 
 
 
+#' Run an expression in 32-bit R
+#'
+#' @param expr
+#' @param result
+#'
+#' @return
+#' @export
+#'
+#' @examples
 r32_run <-
   function(expr,
            result = "result"){
@@ -236,20 +239,14 @@ r32_run <-
     return(df)
   }
 
-
-
-# test_expr <-
-#   expression({
-#     db <- DBI::dbConnect(odbc::odbc(),
-#                          Driver = 'Microsoft Access Driver (*.mdb, *.accdb)',
-#                          Dbq = 'data/inventory-wisconsin_cfi-08-07-2017.accdb')
-#     result <- DBI::dbListTables(db)
-#     DBI::dbDisconnect(db)
-#     })
-#
-# r32_run(test_expr,
-#         "result")
-
+#' Source a file using a 32-bit R process
+#'
+#' @param source.file
+#'
+#' @return
+#' @export
+#'
+#' @examples
 r32_source <-
   function(source.file){
 

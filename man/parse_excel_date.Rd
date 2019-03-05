@@ -2,7 +2,7 @@
 % Please edit documentation in R/processing_functions.R
 \name{parse_excel_date}
 \alias{parse_excel_date}
-\title{Title}
+\title{Parse a date time that has been opened in Excel}
 \usage{
 parse_excel_date(x)
 }
@@ -10,5 +10,5 @@ parse_excel_date(x)
 \item{x}{}
 }
 \description{
-Title
+Parse a date time that has been opened in Excel
 }

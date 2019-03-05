@@ -2,7 +2,7 @@
 % Please edit documentation in R/connect_32bit_access.R
 \name{r32_query}
 \alias{r32_query}
-\title{r32_query}
+\title{Send a query to and fetch results from a 32-bit Access database from 64-bit R}
 \usage{
 r32_query(db.path, sql.string)
 }

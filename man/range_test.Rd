@@ -2,14 +2,32 @@
 % Please edit documentation in R/processing_functions.R
 \name{range_test}
 \alias{range_test}
-\title{Title}
+\title{Perform a range test with data-derived or specified min/max}
 \usage{
 range_test(data, observations, lower = NULL, upper = NULL,
   backfill = TRUE, ...)
 }
 \arguments{
-\item{...}{}
+\item{observations}{The unquoted column name of the data you want to test}
+
+\item{lower}{The lower bound of acceptable data}
+
+\item{upper}{The lower bound of acceptable data}
+
+\item{backfill}{A logical indicating if \code{\link[zoo]{na_approx}} should
+be used}
+
+\item{...}{Arguments passed on to \code{\link[zoo]{na_approx}}}
 }
 \description{
-Title
+If lower and upper are \code{NULL}, the minimum and maximum global values
+will be used
 }
+\details{
+Global lower and upper are calculated if not supplied. There could be a
+window argument here to do annual or monthly range tests
+}
+\seealso{
+Other QAQC functions: \code{\link{offset_solinst_time}}
+}
+\concept{QAQC functions}

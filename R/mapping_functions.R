@@ -223,142 +223,32 @@ tasseled_cap <-
     return(tc_list)
   }
 
-#' Title
-#'
-#' @param data
-#'
-#' @return
-#' @export
-#'
-#' @examples
-classify_plots <-
-  function(data){
+write_gdb <-
+  function(obj, gdb, layer.name = NULL){
 
-    df <-
-      data %>%
-      mutate(species = if_else(status == "dead",
-                               paste0("dead-", species),
-                               species)) %>%
-      group_by(plot_id,
-               subplot) %>%
-      mutate(plot_ba_m2 = sum(tree_ba_m2,
-                              na.rm = TRUE),
-             n_stems = n()) %>%
-      group_by(species, add = TRUE) %>%
-      summarize(prevalence = n() / mean(n_stems, na.rm = TRUE),
-                relative_ba = sum(tree_ba_m2, na.rm = TRUE) / mean(plot_ba_m2, na.rm = TRUE)) %>%
-      mutate(iv = (prevalence + relative_ba) / 2) %>%
-      ungroup()
-
-    if(any(stringr::str_detect(class(data), "tbl_dbi"))){
-      df <-
-        compute(df,
-                "temp")
-
-      on.exit(DBI::dbRemoveTable(map_db,
-                                 "temp"))
+    if(is.null(layer.name)){
+      layer.name <-
+        deparse(substitute(obj))
     }
 
-    purrr::reduce(list(classify_by_measure(df, prevalence),
-                       classify_by_measure(df, relative_ba),
-                       classify_by_measure(df, iv)),
-                  full_join,
-                  by = c("plot_id"))
+    gdb <-
+      normalizePath(gdb)
+
+    temp_file <-
+      tempfile(fileext = ".gpkg")
+
+    sf::write_sf(obj,
+                 temp_file)
+
+    ogr <-
+      dplyr::if_else(Sys.info()[["sysname"]] == "Windows",
+                     "C:/OSGeo4W64/bin/ogr2ogr",
+                     "ogr2ogr")
+
+    system_call <-
+      glue::glue('{ogr} -f "FileGDB" -update "{gdb}" "{temp_file}" -nln "{layer.name}"')
+
+    system(system_call)
+
+    unlink(temp_file)
   }
-
-#     # classed_prev <-
-#     df %>%
-#       filter(prevalence == max(prevalence, na.rm = TRUE)) %>%
-#       group_by(plot_id,
-#                species) %>%
-#       mutate(rank = n() + prevalence) %>%
-#       group_by(plot_id,
-#                subplot) %>%
-#       arrange(desc(rank),
-#               desc(iv)) %>%
-#       filter(row_number() == 1) %>%
-#       group_by(plot_id) %>%
-#       mutate(n_subplots = n()) %>%
-#       filter(row_number() == 1) %>%
-#       mutate(class_by_prevalence = if_else(rank > ceiling(n_subplots / 2) | prevalence < 0.5,
-#                                            species,
-#                                            "mixed"),
-#              proportion_by_prevalence = floor(rank) / n_subplots) %>%
-#       select(plot_id,
-#              max_prevalence = prevalence,
-#              proportion_by_prevalence,
-#              class_by_prevalence)
-#
-#     sql("COUNT(prevalence_class) OVER (PARTITION BY plot_id, prevalence_class) + max_prevalence"))
-#
-# ,
-# prevalence_class = if_else(stem_prevalence == max(stem_prevalence, na.rm = TRUE),
-#                            species,
-#                            NA_character_),
-# ba_class = if_else(relative_ba == max(relative_ba, na.rm = TRUE),
-#                    species,
-#                    NA_character_),
-# iv_class = if_else(iv == max(iv, na.rm = TRUE),
-#                    species,
-#                    NA_character_)) %>%
-#   summarize(max_prevalence = max(stem_prevalence, na.rm = TRUE),
-#             max_relative_ba = max(relative_ba, na.rm = TRUE),
-#             max_iv = max(iv, na.rm = TRUE),
-#             prevalence_class = max(prevalence_class, na.rm = TRUE),
-#             ba_class = max(ba_class, na.rm = TRUE),
-#             iv_class = max(iv_class, na.rm = TRUE)) %>%
-#   ungroup()
-#
-#   }
-
-#' Title
-#'
-#' @param data
-#' @param measure
-#'
-#' @return
-#' @export
-#'
-#' @examples
-classify_by_measure <-
-  function(data,
-           measure){
-
-    measure <-
-      enquo(measure)
-
-    measure_name <-
-      rlang::quo_text(measure)
-
-    class_name <-
-      rlang::parse_expr(paste0("class_by_", measure_name))
-
-    prop_name <-
-      rlang::parse_expr(paste0("proportion_by_", measure_name))
-
-    data %>%
-      group_by(plot_id,
-               subplot) %>%
-      filter(!!measure == max(!!measure, na.rm = TRUE)) %>%
-      group_by(plot_id,
-               species) %>%
-      mutate(rank = n() + !!measure) %>%
-      group_by(plot_id,
-               subplot) %>%
-      arrange(desc(rank),
-              desc(iv)) %>%
-      filter(row_number() == 1) %>%
-      group_by(plot_id) %>%
-      mutate(n_subplots = n()) %>%
-      filter(row_number() == 1) %>%
-      mutate(!!class_name := if_else(rank > ceiling(n_subplots / 2) | prevalence < 0.5,
-                                     species,
-                                     "mixed"),
-             !!prop_name := floor(rank) / n_subplots) %>%
-      ungroup() %>%
-      select(plot_id,
-             !!measure,
-             !!prop_name,
-             !!class_name)
-  }
-

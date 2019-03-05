@@ -1,8 +1,9 @@
-#' Title
+#' Offset Solinst loggers that have overwriting errors
 #'
 #' @param data
 #' @param offset
 #'
+#' @family QAQC functions
 #' @return
 #' @export
 #'
@@ -102,17 +103,24 @@ offset_solinst_time <-
              time_shift_distance = lag_distance)
   }
 
-# Global lower and upper are calculated if not supplied. There could be a window
-# argument here to do annual or monthly range tests
-#' Title
+
+#' Perform a range test with data-derived or specified min/max
+#'
+#' If lower and upper are \code{NULL}, the minimum and maximum global values
+#' will be used
+#'
+#' Global lower and upper are calculated if not supplied. There could be a
+#' window argument here to do annual or monthly range tests
 #'
 #' @param data
-#' @param observations
-#' @param lower
-#' @param upper
-#' @param backfill
-#' @param ...
+#' @param observations The unquoted column name of the data you want to test
+#' @param lower The lower bound of acceptable data
+#' @param upper The lower bound of acceptable data
+#' @param backfill A logical indicating if \code{\link[zoo]{na_approx}} should
+#'   be used
+#' @param ... Arguments passed on to \code{\link[zoo]{na_approx}}
 #'
+#' @family QAQC functions
 #' @return
 #' @export
 #'
@@ -123,7 +131,6 @@ range_test <-
            lower = NULL,
            upper = NULL,
            backfill = TRUE,
-           # index.by = NULL,
            ...){
 
     stopifnot(is.data.frame(data),
@@ -217,15 +224,24 @@ range_test <-
   }
 
 
-#' Title
+#' Perform a spike test on a set of observations
+#'
+#' Compare the step size between data points to the average step size within a
+#' specified window and remove and flag spiked data.
 #'
 #' @param data
-#' @param observations
-#' @param n
-#' @param window
-#' @param max.passes
-#' @param backfill
-#' @param ...
+#' @param observations The unquoted column name of the data you want to test
+#' @param n The size of the window to use when calculating the mean and standard
+#'   deviation of the step size, defaults to 4
+#' @param window If data is a tsibble window can be specified rather than n,
+#'   using natural language as in \code{\link[lubridate]{duration}} (e.g. '3
+#'   hours')
+#' @param max.passes The number of times the spike test will be run over the
+#'   code to catch smaller spikes that may have been masked by large spikes.
+#'   Defaults to 3
+#' @param backfill A logical indicating if \code{\link[zoo]{na_approx}} should
+#'   be used
+#' @param ... Arguments passed on to \code{\link[zoo]{na_approx}}
 #'
 #' @return
 #' @export
@@ -360,212 +376,14 @@ spike_test <-
   return(df)
   }
 
-
-#' Title
+#' Expand time intervals to allow for interval joining
 #'
-#' @param path
-#' @param pattern
-#' @param qaqc.file
+#' See \code{\link[lubridate]{interval}}. Step can be specified using natural
+#' language as in \code{\link[lubridate]{duration}} (e.g. '3 hours')
 #'
-#' @return
-#' @export
-#'
-#' @examples
-checkpoint_directory <-
-  function(path,
-           pattern = NULL,
-           qaqc.file = NULL){
-
-    stopifnot(is.character(path),
-              is.null(pattern) | is.character(pattern),
-              fs::dir_exists(path))
-
-    if(!is.null(qaqc.file)){
-      stopifnot(is.character(qaqc.file),
-                fs::dir_exists(fs::path_dir(qaqc.file)))
-    }
-
-    raw_directory <-
-      fs::path_norm(path)
-
-    raw_files <-
-      fs::dir_ls(raw_directory,
-                 glob = pattern)
-
-    checkpoint_file <-
-      fs::path(raw_directory,
-               "__processed_files.txt")
-
-    if(fs::file_exists(checkpoint_file)){
-
-      existing_qaqc <-
-        stringr::str_remove(readr::read_lines(checkpoint_file,
-                                              skip = 1,
-                                              n_max = 1),
-                            "^# ")
-
-      if(!is.null(qaqc.file) && qaqc.file != existing_qaqc){
-        stop("The checkpoint file ", checkpoint_file, " has the QAQC file listed as\n",
-             existing_qaqc,
-             "\n which does not match the supplied file\n",
-             qaqc.file)
-      }
-
-      processed_files <-
-        readr::read_lines(checkpoint_file,
-                          skip = 2)
-
-      raw_files <-
-        raw_files[!match(fs::path_file(raw_files),
-                        fs::path_file(processed_files),
-                        nomatch = 0)]
-
-    } else {
-
-      if(is.null(qaqc.file)){
-        stop("qaqc.file must be supplied if ", checkpoint_file, " does not already exist.'")
-      }
-
-      write_lines(c("# Files that have been processed and incorporated into QAQC data.",
-                    paste0("# ", qaqc.file)),
-                  checkpoint_file)
-    }
-
-    return(raw_files)
-  }
-
-#' Title
-#'
-#' @param data
-#' @param input.files
-#' @param ignore.names
-#'
-#' @return
-#' @export
-#'
-#' @examples
-write_qaqc <-
-  function(data,
-           input.files,
-           ignore.names = FALSE){
-
-    stopifnot(is.data.frame(data),
-              "input_source" %in% names(data))
-
-    input_directory <-
-      fs::path_common(input.files)
-
-    checkpoint_file <-
-      fs::path(input_directory,
-               "__processed_files.txt")
-
-    qaqc_file <-
-      get_qaqc_file(checkpoint_file)
-
-
-    if(fs::file_exists(qaqc_file)){
-      qaqc_data <-
-        suppressMessages(readr::read_csv(qaqc_file))
-
-      if(!identical(names(qaqc_data), names(data)) & !ignore.names){
-        # Check on set operations for automatic check
-        stop("Column names for QAQC do not mach column names for data")
-      }
-
-      fs::file_copy(qaqc_file,
-                    fs::path_ext_set(qaqc_file, ".bak"),
-                    overwrite = TRUE)
-
-      if(nrow(qaqc_data) != 0){
-        data <-
-          map_dfc(data, as.character)
-
-        qaqc_data <-
-          map_dfc(qaqc_data, as.character)
-
-        data <-
-          full_join(data,
-                    qaqc_data,
-                    by = intersect(names(qaqc_data), names(data)))
-      }
-
-      if(nrow(data) > 0){
-        write.csv(data,
-                  qaqc_file,
-                  row.names = FALSE)}
-    } else {
-      write.csv(data,
-                qaqc_file,
-                row.names = FALSE)
-    }
-
-    readr::write_lines(fs::path_file(input.files),
-                       checkpoint_file,
-                       append = TRUE)
-
-    message("QAQC data were written to ", qaqc_file, "\n",
-            "  ", checkpoint_file, " was updated with the processed file names\n")
-  }
-
-## REMOVE QAQC DATA FUNCTION
-# Deletes __procesed_files.txt and removes data from those files from QAQC
-
-#' Title
-#'
-#' @param path
-#'
-#' @return
-#' @export
-#'
-#' @examples
-unprocess_directory <-
-  function(path){
-    stopifnot(is.character(path),
-              fs::dir_exists(path),
-              fs::path_ext(path) != "csv")
-
-    # Read in processed file list from checkpont file
-    checkpoint_file <-
-      fs::path(path,
-               "__processed_files.txt")
-
-    processed_files <-
-      readr::read_lines(checkpoint_file,
-                        skip = 2)
-
-    qaqc_file <-
-      get_qaqc_file(checkpoint_file)
-
-    if(!fs::file_exists(qaqc_file)){
-      stop("The QAQC file (", qaqc_file, ") listed in ", checkpoint_file, " does not exist")
-    }
-
-    # Read in QAQC data & remove observations
-
-    qaqc <-
-      suppressMessages(readr::read_csv(qaqc_file,
-                                       guess = 100000)) %>%
-      filter(!(input_source %in% processed_files))
-
-    # Save updated QAQC
-
-    if(nrow(qaqc) > 0){
-      write.csv(qaqc,
-                qaqc_file,
-                row.names = FALSE)
-    } else {
-      fs::file_delete(qaqc_file)
-    }
-
-    # Delete checkpoint file
-    fs::file_delete(checkpoint_file)
-  }
-
-#' Title
-#'
-#' @param data
-#' @param interval
-#' @param step
+#' @param data Data frame or tibble
+#' @param interval The unquoted column name containing intervals
+#' @param step The desired step size of the time series.
 #'
 #' @return
 #' @export
@@ -607,15 +425,16 @@ expand_intervals <-
       unnest()
   }
 
-#' Title
+#' Join a tibble containing intervals to one containing time stamps
 #'
-#' @param x
-#' @param y
-#' @param instant
-#' @param interval
-#' @param by
-#' @param join
-#' @param step
+#' @param x The table containing instanteous data
+#' @param y The table containing interval data
+#' @param instant The unquoted column name of the timestamps in x
+#' @param interval The unquoted column name of the intervals in y
+#' @param by Other columns to join by
+#' @param join Type of join, one of 'left', 'inner', 'anti', or 'semi'
+#' @param step The time step to use when expanding the intervals (should match
+#'   the time step of the instantous data). Passed to \code{\link{expand_intervals}}
 #'
 #' @return
 #' @export
@@ -670,12 +489,9 @@ interval_join <-
 
   }
 
-#' Title
-#'
-#' @param ...
-#'
 #' @return
 #' @export
+#' @rdname interval_join
 #'
 #' @examples
 interval_left_join <-
@@ -684,12 +500,9 @@ interval_left_join <-
     interval_join(..., join = join)
   }
 
-#' Title
-#'
-#' @param ...
-#'
 #' @return
 #' @export
+#' @rdname interval_join
 #'
 #' @examples
 interval_anti_join <-
@@ -698,12 +511,9 @@ interval_anti_join <-
     interval_join(..., join = join)
   }
 
-#' Title
-#'
-#' @param ...
-#'
 #' @return
 #' @export
+#' @rdname interval_join
 #'
 #' @examples
 interval_inner_join <-
@@ -712,12 +522,9 @@ interval_inner_join <-
     interval_join(..., join = join)
   }
 
-#' Title
-#'
-#' @param ...
-#'
 #' @return
 #' @export
+#' @rdname interval_join
 #'
 #' @examples
 interval_semi_join <-
@@ -726,39 +533,7 @@ interval_semi_join <-
     interval_join(..., join = join)
   }
 
-#' Title
-#'
-#' @param x
-#'
-#' @return
-#' @export
-#'
-#' @examples
-get_qaqc_file <-
-  function(x){
-    readr::read_lines(x,
-                      skip = 1,
-                      n_max = 1) %>%
-      stringr::str_remove("# ")
-  }
-
-#' Title
-#'
-#' @param data
-#'
-#' @return
-#' @export
-#'
-#' @examples
-print_all <-
-  function(data){
-    print(data,
-          n = nrow(data))
-
-    invisible(data)
-  }
-
-#' Title
+#' Parse a date time that has been opened in Excel
 #'
 #' @param x
 #'
@@ -776,7 +551,7 @@ parse_excel_date <-
                     truncated = 3)
   }
 
-#' Title
+#' Expand black ash site name to three digits by left padding
 #'
 #' @param x
 #'

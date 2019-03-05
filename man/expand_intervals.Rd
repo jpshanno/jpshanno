@@ -2,13 +2,18 @@
 % Please edit documentation in R/processing_functions.R
 \name{expand_intervals}
 \alias{expand_intervals}
-\title{Title}
+\title{Expand time intervals to allow for interval joining}
 \usage{
 expand_intervals(data, interval, step = "15 minutes")
 }
 \arguments{
-\item{step}{}
+\item{data}{Data frame or tibble}
+
+\item{interval}{The unquoted column name containing intervals}
+
+\item{step}{The desired step size of the time series.}
 }
 \description{
-Title
+See \code{\link[lubridate]{interval}}. Step can be specified using natural
+language as in \code{\link[lubridate]{duration}} (e.g. '3 hours')
 }

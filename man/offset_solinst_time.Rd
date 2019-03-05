@@ -2,7 +2,7 @@
 % Please edit documentation in R/processing_functions.R
 \name{offset_solinst_time}
 \alias{offset_solinst_time}
-\title{Title}
+\title{Offset Solinst loggers that have overwriting errors}
 \usage{
 offset_solinst_time(data, offset = NULL)
 }
@@ -10,5 +10,9 @@ offset_solinst_time(data, offset = NULL)
 \item{offset}{}
 }
 \description{
-Title
+Offset Solinst loggers that have overwriting errors
 }
+\seealso{
+Other QAQC functions: \code{\link{range_test}}
+}
+\concept{QAQC functions}

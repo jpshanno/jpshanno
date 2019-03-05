@@ -2,7 +2,7 @@
 % Please edit documentation in R/connect_32bit_access.R
 \name{r32_fetch_table}
 \alias{r32_fetch_table}
-\title{r32_fetch_table}
+\title{Fetch a table from an Access database from 64-bit R.}
 \usage{
 r32_fetch_table(db.path, table.name)
 }

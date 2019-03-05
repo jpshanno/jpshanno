@@ -2,7 +2,7 @@
 % Please edit documentation in R/connect_32bit_access.R
 \name{r32_list_tables}
 \alias{r32_list_tables}
-\title{r32_list_tables}
+\title{List tables in a 32-bit Access database from 64-bit R}
 \usage{
 r32_list_tables(db.path)
 }

@@ -2,13 +2,27 @@
 % Please edit documentation in R/database_tools.R
 \name{insert_data}
 \alias{insert_data}
-\title{Title}
+\title{Insert local data into an existing remote table}
 \usage{
 insert_data(local, remote, verbose = TRUE, ignore.structure = FALSE)
 }
 \arguments{
-\item{ignore.structure}{}
+\item{local}{A local dataframe, tibble or tbl_sf}
+
+\item{remote}{A tbl_dbi connection}
+
+\item{verbose}{A logical indicating if the number of inserted rows will be
+printed as a message}
+
+\item{ignore.structure}{A logical inidicating if data should be inserted even
+if the structures do not match USE WITH CAUTION}
+}
+\value{
+The updated remote source is returned invisibly to allow continued
+  piping
 }
 \description{
-Title
+By default this function will check that the local and remote tables have
+matching data structures, and CRSs (if local is of class sf). Only new rows
+are inserted into the remote source.
 }
