@@ -3,7 +3,7 @@
 #'
 #' @importFrom magrittr %>%
 #' @name %>%
-#' @rdname %>%
+#' @rdname pipe
 #' @export
 NULL
 
@@ -12,6 +12,6 @@ NULL
 #'
 #' @importFrom magrittr %T>%
 #' @name %T>%
-#' @rdname %T>%
+#' @rdname pipe
 #' @export
 NULL
