@@ -1,9 +1,18 @@
+#' Title
+#'
+#' @param data
+#' @param offset
+#'
+#' @return
+#' @export
+#'
+#' @examples
 offset_solinst_time <-
   function(data,
            offset = NULL){
 
     stopifnot("sample_time" %in% names(data),
-              isdata.frame(data),
+              is.data.frame(data),
               nrow(data) == 32000)
 
     dst_dates <-
@@ -95,6 +104,19 @@ offset_solinst_time <-
 
 # Global lower and upper are calculated if not supplied. There could be a window
 # argument here to do annual or monthly range tests
+#' Title
+#'
+#' @param data
+#' @param observations
+#' @param lower
+#' @param upper
+#' @param backfill
+#' @param ...
+#'
+#' @return
+#' @export
+#'
+#' @examples
 range_test <-
   function(data,
            observations,
@@ -104,7 +126,7 @@ range_test <-
            # index.by = NULL,
            ...){
 
-    stopifnot(isdata.frame(data),
+    stopifnot(is.data.frame(data),
               is.numeric(lower) | is.null(lower),
               is.numeric(upper) | is.null(upper),
               is.logical(backfill))
@@ -195,6 +217,20 @@ range_test <-
   }
 
 
+#' Title
+#'
+#' @param data
+#' @param observations
+#' @param n
+#' @param window
+#' @param max.passes
+#' @param backfill
+#' @param ...
+#'
+#' @return
+#' @export
+#'
+#' @examples
 spike_test <-
   function(data,
            observations,
@@ -216,7 +252,7 @@ spike_test <-
     stopifnot(is.integer(n) | is.null(n),
               is.integer(max.passes),
               is.character(window) | is.null(window),
-              isdata.frame(data))
+              is.data.frame(data))
 
     observations <-
       enquo(observations)
@@ -325,6 +361,16 @@ spike_test <-
   }
 
 
+#' Title
+#'
+#' @param path
+#' @param pattern
+#' @param qaqc.file
+#'
+#' @return
+#' @export
+#'
+#' @examples
 checkpoint_directory <-
   function(path,
            pattern = NULL,
@@ -352,6 +398,19 @@ checkpoint_directory <-
 
     if(fs::file_exists(checkpoint_file)){
 
+      existing_qaqc <-
+        stringr::str_remove(readr::read_lines(checkpoint_file,
+                                              skip = 1,
+                                              n_max = 1),
+                            "^# ")
+
+      if(!is.null(qaqc.file) && qaqc.file != existing_qaqc){
+        stop("The checkpoint file ", checkpoint_file, " has the QAQC file listed as\n",
+             existing_qaqc,
+             "\n which does not match the supplied file\n",
+             qaqc.file)
+      }
+
       processed_files <-
         readr::read_lines(checkpoint_file,
                           skip = 2)
@@ -375,12 +434,22 @@ checkpoint_directory <-
     return(raw_files)
   }
 
+#' Title
+#'
+#' @param data
+#' @param input.files
+#' @param ignore.names
+#'
+#' @return
+#' @export
+#'
+#' @examples
 write_qaqc <-
   function(data,
            input.files,
            ignore.names = FALSE){
 
-    stopifnot(isdata.frame(data),
+    stopifnot(is.data.frame(data),
               "input_source" %in% names(data))
 
     input_directory <-
@@ -402,6 +471,10 @@ write_qaqc <-
         # Check on set operations for automatic check
         stop("Column names for QAQC do not mach column names for data")
       }
+
+      fs::file_copy(qaqc_file,
+                    fs::path_ext_set(qaqc_file, ".bak"),
+                    overwrite = TRUE)
 
       if(nrow(qaqc_data) != 0){
         data <-
@@ -437,6 +510,14 @@ write_qaqc <-
 ## REMOVE QAQC DATA FUNCTION
 # Deletes __procesed_files.txt and removes data from those files from QAQC
 
+#' Title
+#'
+#' @param path
+#'
+#' @return
+#' @export
+#'
+#' @examples
 unprocess_directory <-
   function(path){
     stopifnot(is.character(path),
@@ -480,6 +561,16 @@ unprocess_directory <-
     fs::file_delete(checkpoint_file)
   }
 
+#' Title
+#'
+#' @param data
+#' @param interval
+#' @param step
+#'
+#' @return
+#' @export
+#'
+#' @examples
 expand_intervals <-
   function(data,
            interval,
@@ -493,7 +584,7 @@ expand_intervals <-
       slice(1) %>%
       pull(!!interval_col)
 
-    stopifnot(isdata.frame(data),
+    stopifnot(is.data.frame(data),
               is.interval(interval),
               is.character(step))
 
@@ -516,6 +607,20 @@ expand_intervals <-
       unnest()
   }
 
+#' Title
+#'
+#' @param x
+#' @param y
+#' @param instant
+#' @param interval
+#' @param by
+#' @param join
+#' @param step
+#'
+#' @return
+#' @export
+#'
+#' @examples
 interval_join <-
   function(x,
            y,
@@ -526,8 +631,8 @@ interval_join <-
            step = "15 minutes"){
 
     # Check basic classes for compatibility
-    stopifnot(isdata.frame(x),
-              isdata.frame(y),
+    stopifnot(is.data.frame(x),
+              is.data.frame(y),
               is.character(by) | is.null(by))
 
     # Check that join is one of left or inner
@@ -565,30 +670,70 @@ interval_join <-
 
   }
 
+#' Title
+#'
+#' @param ...
+#'
+#' @return
+#' @export
+#'
+#' @examples
 interval_left_join <-
   function(...){
     join <- "left"
     interval_join(..., join = join)
   }
 
+#' Title
+#'
+#' @param ...
+#'
+#' @return
+#' @export
+#'
+#' @examples
 interval_anti_join <-
   function(...){
     join <- "anti"
     interval_join(..., join = join)
   }
 
+#' Title
+#'
+#' @param ...
+#'
+#' @return
+#' @export
+#'
+#' @examples
 interval_inner_join <-
   function(...){
     join <- "inner"
     interval_join(..., join = join)
   }
 
+#' Title
+#'
+#' @param ...
+#'
+#' @return
+#' @export
+#'
+#' @examples
 interval_semi_join <-
   function(...){
     join <- "semi"
     interval_join(..., join = join)
   }
 
+#' Title
+#'
+#' @param x
+#'
+#' @return
+#' @export
+#'
+#' @examples
 get_qaqc_file <-
   function(x){
     readr::read_lines(x,
@@ -597,6 +742,14 @@ get_qaqc_file <-
       stringr::str_remove("# ")
   }
 
+#' Title
+#'
+#' @param data
+#'
+#' @return
+#' @export
+#'
+#' @examples
 print_all <-
   function(data){
     print(data,
@@ -605,6 +758,14 @@ print_all <-
     invisible(data)
   }
 
+#' Title
+#'
+#' @param x
+#'
+#' @return
+#' @export
+#'
+#' @examples
 parse_excel_date <-
   function(x){
     parse_date_time(x,
@@ -614,6 +775,15 @@ parse_excel_date <-
                                "mdyHMS"),
                     truncated = 3)
   }
+
+#' Title
+#'
+#' @param x
+#'
+#' @return
+#' @export
+#'
+#' @examples
 
 expand_site <-
   function(x){

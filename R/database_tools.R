@@ -3,6 +3,16 @@
 # remote and local data as local. Alternative you could copy the local data each
 # time as that is likely to the the smaller dataset.
 
+#' Title
+#'
+#' @param local
+#' @param remote
+#' @param column
+#'
+#' @return
+#' @export
+#'
+#' @examples
 check_categorical <-
   function(local,
            remote,
@@ -24,6 +34,16 @@ check_categorical <-
       dplyr::distinct()
   }
 
+#' Title
+#'
+#' @param local
+#' @param remote
+#' @param column
+#'
+#' @return
+#' @export
+#'
+#' @examples
 check_numeric <-
   function(local,
            remote,
@@ -51,6 +71,17 @@ check_numeric <-
   }
 
 
+#' Title
+#'
+#' @param local
+#' @param remote
+#' @param verbose
+#' @param ignore.structure
+#'
+#' @return
+#' @export
+#'
+#' @examples
 insert_data <-
   function(local,
            remote,

@@ -5,6 +5,16 @@
 # tasseled_cap()) so that they work within a tidyverse pipeline
 
 # Soil Adjusted Vegetation Index (Huete, 1988) as implemented in RStoolbox
+#' Title
+#'
+#' @param nir
+#' @param red
+#' @param L
+#'
+#' @return
+#' @export
+#'
+#' @examples
 savi <-
   function(nir, red, L) {
     savi <- (nir - red) * (1 + L)/(nir + red + L)
@@ -12,6 +22,15 @@ savi <-
   }
 
 # Simple ratio (Jordan, 1969)
+#' Title
+#'
+#' @param nir
+#' @param red
+#'
+#' @return
+#' @export
+#'
+#' @examples
 sr <-
   function(nir, red) {
     sr <- nir / red
@@ -19,6 +38,15 @@ sr <-
   }
 
 # Moisture Stress Index (Rock et al, 1986)
+#' Title
+#'
+#' @param swir1
+#' @param nir
+#'
+#' @return
+#' @export
+#'
+#' @examples
 msi <-
   function(swir1, nir){
     msi <- swir1 / nir
@@ -26,6 +54,15 @@ msi <-
   }
 
 # NDVI
+#' Title
+#'
+#' @param red
+#' @param nir
+#'
+#' @return
+#' @export
+#'
+#' @examples
 ndvi <-
   function(red, nir){
     num <- nir - red
@@ -33,12 +70,30 @@ ndvi <-
     num / den}
 
 # Senescing
+#' Title
+#'
+#' @param nir
+#' @param green
+#'
+#' @return
+#' @export
+#'
+#' @examples
 senesce <-
   function(nir, green){
     nir / green
   }
 
 # Global environmental monitoring index (Pinty & Verstraete, 1992) as implemented in RStoolbox
+#' Title
+#'
+#' @param nir
+#' @param red
+#'
+#' @return
+#' @export
+#'
+#' @examples
 gemi <-
   function(nir, red) {
     gemi <-
@@ -49,6 +104,17 @@ gemi <-
   }
 
 # Shortwave to visible (Wolter 2008) (equivalent to svr5)
+#' Title
+#'
+#' @param red
+#' @param blue
+#' @param green
+#' @param swir1
+#'
+#' @return
+#' @export
+#'
+#' @examples
 svr1 <-
   function(red, blue, green, swir1){
     # Don't use mean() here because then you have to do the calculations rowwise inside of a pipeline
@@ -58,6 +124,17 @@ svr1 <-
   }
 
 # Shortwave to visible (Wolter 2008) (equivalent to svr7)
+#' Title
+#'
+#' @param red
+#' @param blue
+#' @param green
+#' @param swir2
+#'
+#' @return
+#' @export
+#'
+#' @examples
 svr2 <-
   function(red, blue, green, swir2){
     # Don't use mean() here because then you have to do the calculations rowwise inside of a pipeline
@@ -67,12 +144,34 @@ svr2 <-
   }
 
 #
+#' Title
+#'
+#' @param sr_leaf_off
+#' @param sr_august
+#'
+#' @return
+#' @export
+#'
+#' @examples
 sr_ash <-
   function(sr_leaf_off, sr_august){
     sr_ash <- sr_leaf_off - sr_august
     return(sr_ash)
   }
 
+#' Title
+#'
+#' @param blue
+#' @param green
+#' @param red
+#' @param nir
+#' @param swir5
+#' @param swir7
+#'
+#' @return
+#' @export
+#'
+#' @examples
 tasseled_cap <-
   function(blue, green, red, nir, swir5, swir7) {
 
@@ -124,6 +223,14 @@ tasseled_cap <-
     return(tc_list)
   }
 
+#' Title
+#'
+#' @param data
+#'
+#' @return
+#' @export
+#'
+#' @examples
 classify_plots <-
   function(data){
 
@@ -204,6 +311,15 @@ classify_plots <-
 #
 #   }
 
+#' Title
+#'
+#' @param data
+#' @param measure
+#'
+#' @return
+#' @export
+#'
+#' @examples
 classify_by_measure <-
   function(data,
            measure){
