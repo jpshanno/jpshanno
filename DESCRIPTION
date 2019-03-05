@@ -10,5 +10,13 @@ License: What license is it under?
 Encoding: UTF-8
 LazyData: true
 Imports:
-  magrittr
-RoxygenNote: 6.1.0
+  fs,
+  glue,
+  ggplot2,
+  magrittr,
+  purrr,
+  readr
+Suggests:
+  tsibble,
+  ggforce
+RoxygenNote: 6.1.1
