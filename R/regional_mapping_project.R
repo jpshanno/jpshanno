@@ -342,6 +342,7 @@ get_dominant_species <-
 #' @param idw.power The power used for IDW
 #' @param use.parallel Logical indicating if parallel processing should be used
 #'   (requires the furrr package)
+#' @param workers The number of works to use if `use.parallel=TRUE`
 #'
 #' @family plot classifiers
 #' @return
@@ -356,14 +357,15 @@ classify_plot <-
            point.threshold = 0.2,
            plot.threshold = 0.2,
            idw.power = 3,
-           use.parallel = FALSE){
+           use.parallel = FALSE,
+           workers = 2){
 
     if(use.parallel){
       map <-
         furrr::future_map
 
-      plan(multiprocess,
-           workers = 4)
+      future::plan("multiprocess",
+                   workers = workers)
     } else {
       map <-
         purrr::map
@@ -379,14 +381,14 @@ classify_plot <-
             group_by(plot_id, species) %>%
             summarize(!!.x := interpolate_plot(!!.x, species, idw.power)) %>%
             summarize(!!.x := collapse_matrices(!!.x)) %>%
-            mutate(!!.x := map(!!.x, ~do.call(classifier, list(mat = .x, point.threshold = point.threshold, plot.threshold = plot.threshold)))) %>%
+            mutate(!!.x := purrr::map(!!.x, ~do.call(classifier, list(mat = .x, point.threshold = point.threshold, plot.threshold = plot.threshold)))) %>%
             unnest(!!.x))
 
     if(use.parallel){
-      plan(sequential)
+      future::plan("sequential")
     }
 
-    reduce(classed_dfs,
-           left_join,
-           by = "plot_id")
+    purrr::reduce(classed_dfs,
+                  dplyr::left_join,
+                  by = "plot_id")
   }
