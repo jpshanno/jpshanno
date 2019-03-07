@@ -4,15 +4,18 @@
 \alias{write_qaqc}
 \title{Append data to an existing QAQC file and create a back-up}
 \usage{
-write_qaqc(data, input.files, ignore.names = FALSE)
+write_qaqc(data, source.directory, ignore.names = FALSE)
 }
 \arguments{
 \item{data}{The data to write}
 
-\item{input.files}{The files used in processing}
+\item{source.directory}{The directory of the raw files}
 
 \item{ignore.names}{Logical indicating whether or not to check if the names
 of the existing data and new data should match}
+
+\item{check.duplicates}{Logical indicating whether the appended QAQC data
+should check for duplicates of site and sample time}
 }
 \description{
 Append data to an existing QAQC file and create a back-up

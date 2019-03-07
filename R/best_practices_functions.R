@@ -71,7 +71,9 @@ checkpoint_directory <-
 #' Append data to an existing QAQC file and create a back-up
 #'
 #' @param data The data to write
-#' @param input.files The files used in processing
+#' @param source.directory The directory of the raw files
+#' @param check.duplicates Logical indicating whether the appended QAQC data
+#'   should check for duplicates of site and sample time
 #' @param ignore.names Logical indicating whether or not to check if the names
 #'   of the existing data and new data should match
 #'
@@ -81,18 +83,31 @@ checkpoint_directory <-
 #' @examples
 write_qaqc <-
   function(data,
-           input.files,
+           source.directory,
            ignore.names = FALSE){
 
     stopifnot(is.data.frame(data),
+              is.character(source.directory),
               "input_source" %in% names(data))
 
-    input_directory <-
-      fs::path_common(input.files)
+    if(!any(grepl("input_source", names(data)))){
+      stop("data must contain the column input_source")
+    }
+
+    input_files <-
+      unique(data[["input_source"]])
+
+    input_files <-
+      input_files[!is.na(input_files)]
 
     checkpoint_file <-
-      fs::path(input_directory,
+      fs::path(source.directory,
                "__processed_files.txt")
+
+    if(!fs::file_exists(checkpoint_file)){
+      stop("The file '__processed_files.txt' does not exist in ",
+           source.directory)
+    }
 
     qaqc_file <-
       get_qaqc_file(checkpoint_file)
@@ -100,7 +115,9 @@ write_qaqc <-
 
     if(fs::file_exists(qaqc_file)){
       qaqc_data <-
-        suppressMessages(readr::read_csv(qaqc_file))
+        suppressMessages(readr::read_csv(qaqc_file,
+                                         guess_max = 100000,
+                                         locale = readr::locale(tz = "EST")))
 
       if(!identical(names(qaqc_data), names(data)) & !ignore.names){
         # Check on set operations for automatic check
@@ -108,7 +125,7 @@ write_qaqc <-
       }
 
       fs::file_copy(qaqc_file,
-                    fs::path_ext_set(qaqc_file, ".bak"),
+                    fs::path_ext_set(qaqc_file, "bak"),
                     overwrite = TRUE)
 
       if(nrow(qaqc_data) != 0){
@@ -119,9 +136,11 @@ write_qaqc <-
           map_dfc(qaqc_data, as.character)
 
         data <-
-          full_join(data,
-                    qaqc_data,
-                    by = intersect(names(qaqc_data), names(data)))
+          dplyr::anti_join(data,
+                           qaqc_data,
+                           by = base::intersect(names(qaqc_data), names(data)))
+
+
       }
 
       if(nrow(data) > 0){
@@ -134,9 +153,12 @@ write_qaqc <-
                 row.names = FALSE)
     }
 
-    readr::write_lines(fs::path_file(input.files),
-                       checkpoint_file,
-                       append = TRUE)
+    processed_files <-
+      readr::read_lines(checkpoint_file) %>%
+      union(input_files)
+
+    readr::write_lines(processed_files,
+                       checkpoint_file)
 
     message("QAQC data were written to ", qaqc_file, "\n",
             "  ", checkpoint_file, " was updated with the processed file names\n")
