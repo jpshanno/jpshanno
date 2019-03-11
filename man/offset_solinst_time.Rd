@@ -13,6 +13,7 @@ offset_solinst_time(data, offset = NULL)
 Offset Solinst loggers that have overwriting errors
 }
 \seealso{
-Other QAQC functions: \code{\link{range_test}}
+Other QAQC functions: \code{\link{range_test}},
+  \code{\link{spike_test}}
 }
 \concept{QAQC functions}

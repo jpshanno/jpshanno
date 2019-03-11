@@ -5,7 +5,7 @@
 \title{Perform a range test with data-derived or specified min/max}
 \usage{
 range_test(data, observations, lower = NULL, upper = NULL,
-  backfill = TRUE, ...)
+  backfill = TRUE, alpha = 0.01, ...)
 }
 \arguments{
 \item{observations}{The unquoted column name of the data you want to test}
@@ -28,6 +28,7 @@ Global lower and upper are calculated if not supplied. There could be a
 window argument here to do annual or monthly range tests
 }
 \seealso{
-Other QAQC functions: \code{\link{offset_solinst_time}}
+Other QAQC functions: \code{\link{offset_solinst_time}},
+  \code{\link{spike_test}}
 }
 \concept{QAQC functions}

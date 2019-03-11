@@ -131,6 +131,7 @@ range_test <-
            lower = NULL,
            upper = NULL,
            backfill = TRUE,
+           alpha = 0.01,
            ...){
 
     stopifnot(is.data.frame(data),
@@ -174,7 +175,7 @@ range_test <-
         pull(sd)
 
       confint_coef <-
-        qnorm(0.005, lower.tail = FALSE)
+        qnorm(alpha / 2, lower.tail = FALSE)
 
       uci <-
         mean_x + confint_coef * sd_x
@@ -244,7 +245,7 @@ range_test <-
 #' @param ... Arguments passed on to \code{\link[zoo]{na.approx}}
 #'
 #' @return
-#' @family QAQC Functions
+#' @family QAQC functions
 #' @export
 #'
 #' @examples

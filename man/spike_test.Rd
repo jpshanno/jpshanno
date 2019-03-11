@@ -30,4 +30,8 @@ be used}
 Compare the step size between data points to the average step size within a
 specified window and remove and flag spiked data.
 }
-\concept{QAQC Functions}
+\seealso{
+Other QAQC functions: \code{\link{offset_solinst_time}},
+  \code{\link{range_test}}
+}
+\concept{QAQC functions}
