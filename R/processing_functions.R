@@ -116,9 +116,9 @@ offset_solinst_time <-
 #' @param observations The unquoted column name of the data you want to test
 #' @param lower The lower bound of acceptable data
 #' @param upper The lower bound of acceptable data
-#' @param backfill A logical indicating if \code{\link[zoo]{na_approx}} should
+#' @param backfill A logical indicating if \code{\link[zoo]{na.approx}} should
 #'   be used
-#' @param ... Arguments passed on to \code{\link[zoo]{na_approx}}
+#' @param ... Arguments passed on to \code{\link[zoo]{na.approx}}
 #'
 #' @family QAQC functions
 #' @return
@@ -239,11 +239,12 @@ range_test <-
 #' @param max.passes The number of times the spike test will be run over the
 #'   code to catch smaller spikes that may have been masked by large spikes.
 #'   Defaults to 3
-#' @param backfill A logical indicating if \code{\link[zoo]{na_approx}} should
+#' @param backfill A logical indicating if \code{\link[zoo]{na.approx}} should
 #'   be used
-#' @param ... Arguments passed on to \code{\link[zoo]{na_approx}}
+#' @param ... Arguments passed on to \code{\link[zoo]{na.approx}}
 #'
 #' @return
+#' @family QAQC Functions
 #' @export
 #'
 #' @examples

@@ -14,10 +14,10 @@ range_test(data, observations, lower = NULL, upper = NULL,
 
 \item{upper}{The lower bound of acceptable data}
 
-\item{backfill}{A logical indicating if \code{\link[zoo]{na_approx}} should
+\item{backfill}{A logical indicating if \code{\link[zoo]{na.approx}} should
 be used}
 
-\item{...}{Arguments passed on to \code{\link[zoo]{na_approx}}}
+\item{...}{Arguments passed on to \code{\link[zoo]{na.approx}}}
 }
 \description{
 If lower and upper are \code{NULL}, the minimum and maximum global values

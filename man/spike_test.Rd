@@ -21,12 +21,13 @@ hours')}
 code to catch smaller spikes that may have been masked by large spikes.
 Defaults to 3}
 
-\item{backfill}{A logical indicating if \code{\link[zoo]{na_approx}} should
+\item{backfill}{A logical indicating if \code{\link[zoo]{na.approx}} should
 be used}
 
-\item{...}{Arguments passed on to \code{\link[zoo]{na_approx}}}
+\item{...}{Arguments passed on to \code{\link[zoo]{na.approx}}}
 }
 \description{
 Compare the step size between data points to the average step size within a
 specified window and remove and flag spiked data.
 }
+\concept{QAQC Functions}
