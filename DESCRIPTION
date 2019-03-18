@@ -10,12 +10,16 @@ License: What license is it under?
 Encoding: UTF-8
 LazyData: true
 Imports:
+  dygraphs,
+  dplyr,
   fs,
   glue,
   ggplot2,
+  lubridate,
   magrittr,
   purrr,
-  readr
+  readr,
+  tidyr
 Suggests:
   tsibble,
   ggforce
