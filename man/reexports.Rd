@@ -3,6 +3,7 @@
 \name{\%>\%}
 \alias{\%>\%}
 \alias{\%T>\%}
+\alias{!!}
 \title{re-export magrittr pipe operator}
 \description{
 re-export magrittr pipe operator
