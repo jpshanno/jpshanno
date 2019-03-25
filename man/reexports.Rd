@@ -2,11 +2,8 @@
 % Please edit documentation in R/__Imports.R
 \name{\%>\%}
 \alias{\%>\%}
-\alias{\%T>\%}
 \alias{!!}
 \title{re-export magrittr pipe operator}
 \description{
-re-export magrittr pipe operator
-
 re-export magrittr pipe operator
 }
