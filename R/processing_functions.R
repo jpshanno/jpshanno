@@ -564,7 +564,7 @@ parse_excel_date <-
 
 expand_site <-
   function(x){
-    stopifnot(is.character(x))
+    # stopifnot(is.character(x))
 
     str_pad(x,
             3,
