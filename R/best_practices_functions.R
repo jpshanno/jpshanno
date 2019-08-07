@@ -88,8 +88,14 @@ write_qaqc <-
               is.character(input.files),
               "input_source" %in% names(data))
 
-    input_directory <-
-      fs::path_common(input.files)
+    if(length(input.files) == 1){
+      input_directory <-
+        fs::path_dir(input.files)
+    } else {
+      input_directory <-
+        fs::path_common(input.files)
+    }
+
 
     checkpoint_file <-
       fs::path(input_directory,
