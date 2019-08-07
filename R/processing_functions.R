@@ -424,7 +424,7 @@ expand_intervals <-
       select(one_of(names_in),
              interval_time) %>%
       ungroup() %>%
-      unnest()
+      unnest(cols = c(interval_time))
   }
 
 #' Join a tibble containing intervals to one containing time stamps
