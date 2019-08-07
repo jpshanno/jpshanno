@@ -60,6 +60,25 @@ set_rprofile <-
     }
   }
 
+#' Load liberation fonts
+#'
+#' This loads the font files included in the package
+#'
+#' @export
+#'
+load_liberation_fonts <-
+  function(){
+    sans_file <-
+      system.file("fonts", "LiberationSans-Regular.ttf", package = "jpshanno")
+
+    narrow_file <-
+      system.file("fonts", "LiberationSansNarrow-Regular.ttf", package = "jpshanno")
+
+  sysfonts::font_add(family = "Liberation-Narrow", narrow_file)
+  sysfonts::font_add(family = "Liberation-Sans", regular = sans_file)
+  showtext::showtext_auto()
+}
+
 #' Print all the rows of a tibble
 #'
 #' @param data
