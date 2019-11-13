@@ -68,14 +68,33 @@ set_rprofile <-
 #'
 load_liberation_fonts <-
   function(){
-    sans_file <-
+    sans_reg <-
       system.file("fonts", "LiberationSans-Regular.ttf", package = "jpshanno")
 
-    narrow_file <-
+    sans_bold <-
+      system.file("fonts", "LiberationSans-Bold.ttf", package = "jpshanno")
+
+    sans_italic <-
+      system.file("fonts", "LiberationSans-Italic.ttf", package = "jpshanno")
+
+    narrow_reg <-
       system.file("fonts", "LiberationSansNarrow-Regular.ttf", package = "jpshanno")
 
-  sysfonts::font_add(family = "Liberation-Narrow", narrow_file)
-  sysfonts::font_add(family = "Liberation-Sans", regular = sans_file)
+    narrow_bold <-
+      system.file("fonts", "LiberationSansNarrow-Bold.ttf", package = "jpshanno")
+
+    narrow_italic <-
+      system.file("fonts", "LiberationSansNarrow-Italic.ttf", package = "jpshanno")
+
+  sysfonts::font_add(family = "Liberation",
+                     regular = narrow_reg,
+                     bold = narrow_bold,
+                     italic = narrow_italic)
+  sysfonts::font_add(family = "liberation-sans",
+                     regular = sans_reg,
+                     bold = sans_bold,
+                     italic = sans_italic)
+
   showtext::showtext_auto()
 }
 
@@ -93,4 +112,29 @@ print_all <-
           n = nrow(data))
 
     invisible(data)
+  }
+
+
+#' Set black ash study site treatment period
+#'
+#' @param x Time series of sample data/times
+#' @param study One of "pws", "eco", "planting"
+#'
+#' @return A factor with levels "Pre-treatment" and "Post-treatment"
+#' @export
+#' @examples
+set_treatment_period <-
+  function(x, study = "pws"){
+    match.arg(study, c("pws", "eco", "planting"))
+
+    treatment_date <-
+      dplyr::if_else(study == "pws",
+             lubridate::ymd_hms("2015-03-31 00:00:00"),
+             lubridate::ymd_hms("2014-03-31 00:00:00"))
+
+    factor(ifelse(x < treatment_date,
+                   "Pre-treatment",
+                   "Post-treatment"),
+           levels = c("Pre-treatment", "Post-treatment"),
+           labels = c("Pre-treatment", "Post-treatment"))
   }
