@@ -4,7 +4,7 @@
 \alias{save_ggplot}
 \title{Auto scale text in ggsave}
 \usage{
-save_ggplot(filename, plot = last_plot(), dpi = 300, ...)
+save_ggplot(filename, plot = last_plot(), ...)
 }
 \arguments{
 \item{...}{}

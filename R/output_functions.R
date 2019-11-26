@@ -56,9 +56,13 @@ pretty_png <-
 #'
 #' @examples
 save_ggplot <-
-  function(filename, plot = last_plot(), dpi = 300, ...){
+  function(filename, plot = last_plot(), ...){
 
-    plot <- plot + theme(text = element_text(size = 36*(300/96)))
+    text_size <-
+      plot$theme$text$size
 
-    ggplot2::ggsave(filename, plot, dpi, ...)
+    # The 0.75 converts ppi (displayed with X11) to dpi
+    plot <- plot + ggplot2::theme(text = element_text(size = 0.75*text_size))
+
+    ggplot2::ggsave(filename = filename, plot = plot, dpi = dpi, ...)
   }
