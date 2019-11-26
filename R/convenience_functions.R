@@ -138,3 +138,40 @@ set_treatment_period <-
            levels = c("Pre-treatment", "Post-treatment"),
            labels = c("Pre-treatment", "Post-treatment"))
   }
+
+
+#' Combine Standard Errors
+#'
+#' @param mu A vector of two means
+#' @param se A vector of two standard errors
+#' @param n A vector of two group sizes
+#'
+#' @return
+#' @export
+#'
+#' @examples
+combine_se <-
+  function(mu, se, n){
+    # From Baker & Nissim. 1963. Expressions for Combining Standard Errors of
+    # Two Groups and for Sequential Standard Error. Nature
+
+    stopifnot(length(mu) == 2 & length(se) == 2 & length(n) == 2)
+
+    n1 <- n[1]
+    n2 <- n[2]
+    N <- sum(n)
+    mu1 <- mu[1]
+    mu2 <- mu[2]
+    se1 <- se[1]
+    se2 <- se[2]
+
+    scalar <- 1/(N*(N-1))
+    scaled_se1 <- n1*(n1-1)*se1^2
+    scaled_se2 <- n2*(n2-1)*se2^2
+    scaled_mean <- ((n1*n2) / N)*(mu1-mu2)^2
+
+    SE_sq <- scalar * sum(scaled_se1, scaled_se2, scaled_mean)
+
+    sqrt(SE_sq)
+
+  }
